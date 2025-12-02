@@ -62,11 +62,19 @@ procedure Day01 is
       Position : Integer := 50;
       Change   : Integer;
       Distance : Integer;
+      Cycles   : Integer;
    begin
       for Ith in Values'Range loop
          Distance := Values (Ith).Distance;
          if Values (Ith).Direction = Left then
             Distance := -Distance;
+         end if;
+         Cycles := Distance / 100;
+         Distance := Distance - Cycles * 100;
+         Result := Result + abs (Cycles);
+         if Cycles > 0 then
+            HAT.Put ("Cycles: ");
+            HAT.Put_Line (HAT.Image (Cycles));
          end if;
          if Debug then
             HAT.Put ("Move ");
@@ -79,11 +87,7 @@ procedure Day01 is
             while Distance /= 0 loop
                --  miss Max attribute of integer
                if Position = 0 or else Distance > -Position then
-                  if Distance < -100 then
-                     Change := -100;
-                  else
-                     Change := Distance;
-                  end if;
+                  Change := Distance;
                else
                   Change := -Position;
                end if;
@@ -119,11 +123,7 @@ procedure Day01 is
             end if;
             while Distance /= 0 loop
                if Position = 0 or else Distance < 100 - Position then
-                  if Distance > 100 then
-                     Change := 100;
-                  else
-                     Change := Distance;
-                  end if;
+                  Change := Distance;
                else
                   Change := 100 - Position;
                end if;
