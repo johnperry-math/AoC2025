@@ -12,7 +12,7 @@ procedure Day01 is
    end record;
 
    Length : constant Positive := 4659;
-   Debug  : constant Boolean := True;
+   Debug  : constant Boolean := False;
 
    --  miss ability to use Length as endpoint of array
    Values : array (1 .. 4659) of Instruction;
@@ -72,11 +72,11 @@ procedure Day01 is
          Cycles := Distance / 100;
          Distance := Distance - Cycles * 100;
          Result := Result + abs (Cycles);
-         if Cycles > 0 then
-            HAT.Put ("Cycles: ");
-            HAT.Put_Line (HAT.Image (Cycles));
-         end if;
          if Debug then
+            if Cycles > 0 then
+               HAT.Put ("Cycles: ");
+               HAT.Put_Line (HAT.Image (Cycles));
+            end if;
             HAT.Put ("Move ");
          end if;
          if Distance < 0 then
@@ -165,5 +165,4 @@ begin
    HAT.Put_Line (HAT.Image (Part_1));
    HAT.Put ("No; it is ");
    HAT.Put_Line (HAT.Image (Part_2));
---  2573 too low
 end Day01;
