@@ -1,0 +1,127 @@
+with HAT;
+
+procedure Day03 is
+
+   Debug : constant Boolean := False;
+
+   subtype VString is HAT.VString;
+
+   --  subtype Battery_String is String (1 .. 15);
+   --  Battery_Strings: array (1..4) of Battery_String;
+   --  Filename: String (1 .. 11) := "example.txt";
+   subtype Battery_String is String (1 .. 100);
+   Battery_Strings : array (1 .. 200) of Battery_String;
+   Filename        : String (1 .. 9) := "input.txt";
+
+   procedure Read_Input is
+      Input : HAT.File_Type;
+   begin
+      HAT.Open (Input, Filename);
+      for Ith in Battery_Strings'Range loop
+         HAT.Get_Line (Input, Battery_Strings (Ith));
+      end loop;
+      HAT.Close (Input);
+   end Read_Input;
+
+   type Battery_Record is record
+      Position : Positive;
+      Joltage  : Natural;
+   end record;
+
+   function To_Natural (Joltage : Character) return Natural is
+   begin
+      return Character'Pos (Joltage) - Character'Pos ('0');
+   end To_Natural;
+
+   --  Length : constant Positive := 2;
+   --  type Battery_Sequence is array (1 .. 2) of Battery_Record;
+   Length : constant Positive := 12;
+   type Battery_Sequence is array (1 .. 12) of Battery_Record;
+
+   --  seems it should be straightforward for the compiler to re-imagine
+   --  a record result as an out parameter
+   procedure Find_Minimum
+     (Sequence : Battery_Sequence; Result : out Battery_Record) is
+   begin
+      --  miss aggregate initialization of records
+      Result.Position := 1000;
+      Result.Joltage := 10;
+      for Ith in Sequence'Range loop
+         if Sequence (Ith).Joltage < Result.Joltage then
+            Result.Joltage := Sequence (Ith).Joltage;
+            Result.Position := Sequence (Ith).Position;
+         end if;
+      end loop;
+   end Find_Minimum;
+
+   function Can_Shift_To_Increase (Sequence : Battery_Sequence) return Natural
+   is
+   begin
+      for Ith in 1 .. Sequence'Last - 1 loop
+         if Sequence (Ith).Joltage < Sequence (Ith + 1).Joltage then
+            return Ith;
+         end if;
+      end loop;
+      return 0;
+   end Can_Shift_To_Increase;
+
+   function Solution return Natural is
+      Result   : Natural := 0;
+      Battery  : Battery_String;
+      Sequence : Battery_Sequence;
+      Minimum  : Battery_Record;
+      Value    : Natural := 0;
+      Joltage  : Natural := 0;
+      Shifty   : Natural;
+   begin
+      for Ith in Battery_Strings'Range loop
+         --  AGH no block statements
+         Battery := Battery_Strings (Ith);
+         for Ith in 1 .. Length loop
+            Sequence (Ith).Position := Ith;
+            Sequence (Ith).Joltage := To_Natural (Battery (Ith));
+         end loop;
+         Find_Minimum (Sequence, Minimum);
+         for Ith in Sequence'Last + 1 .. Battery'Last loop
+            Shifty := Can_Shift_To_Increase (Sequence);
+            Value := To_Natural (Battery (Ith));
+            if Shifty > 0 then
+               for Jth in Shifty .. Sequence'Last - 1 loop
+                  Sequence (Jth) := Sequence (Jth + 1);
+               end loop;
+               Sequence (Sequence'Last).Position := Ith;
+               Sequence (Sequence'Last).Joltage := To_Natural (Battery (Ith));
+               Find_Minimum (Sequence, Minimum);
+            elsif Value > Minimum.Joltage then
+               for Jth in Sequence'Range loop
+                  --  oof, miss when statements
+                  if Sequence (Jth).Position >= Minimum.Position
+                    and then Jth < Sequence'Last
+                  then
+                     Sequence (Jth) := Sequence (Jth + 1);
+                  end if;
+               end loop;
+               Sequence (Sequence'Last).Position := Ith;
+               Sequence (Sequence'Last).Joltage := To_Natural (Battery (Ith));
+               Find_Minimum (Sequence, Minimum);
+            end if;
+         end loop;
+         Joltage := 0;
+         for Ith in Sequence'Range loop
+            Joltage := Joltage * 10 + Sequence (Ith).Joltage;
+         end loop;
+         Result := Result + Joltage;
+      end loop;
+      return Result;
+   end Solution;
+
+begin
+   Read_Input;
+   if Length = 2 then
+      HAT.Put ("Total output joltage is ");
+      HAT.Put_Line (HAT.Image (Solution));
+   else
+      HAT.Put ("With 12 batteries it's ");
+      HAT.Put_Line (HAT.Image (Solution));
+   end if;
+end Day03;

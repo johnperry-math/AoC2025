@@ -6,7 +6,6 @@ with Ada.Containers.Vectors;
 procedure Day03 is
 
    package IO renames Ada.Text_IO;
-   package Natural_IO is new IO.Integer_IO (Num => Natural);
 
    Debug : constant Boolean := False;
 
@@ -69,29 +68,27 @@ procedure Day03 is
    function Solution (Length : Positive := 2) return Joltage_Range is
       Result : Joltage_Range := 0;
    begin
-      for Battery_String of Battery_Strings loop
+      for Battery of Battery_Strings loop
          declare
             Sequence : Battery_Sequence (1 .. Length) :=
               [for Ith in 1 .. Length =>
                  Battery_Record'
-                   (Position => Ith,
-                    Joltage  => To_Natural (Battery_String (Ith)))];
+                   (Position => Ith, Joltage => To_Natural (Battery (Ith)))];
             Minimum  : Battery_Record := Find_Minimum (Sequence);
             Value    : Natural := 0;
             Joltage  : Joltage_Range := 0;
             Shifty   : Natural;
          begin
-            for Ith in Sequence'Last + 1 .. Battery_String'Last loop
+            for Ith in Sequence'Last + 1 .. Battery'Last loop
                Shifty := Can_Shift_To_Increase (Sequence);
-               Value := To_Natural (Battery_String (Ith));
+               Value := To_Natural (Battery (Ith));
                if Shifty > 0 then
                   for Jth in Shifty .. Sequence'Last - 1 loop
                      Sequence (Jth) := Sequence (Jth + 1);
                   end loop;
                   Sequence (Sequence'Last) :=
                     Battery_Record'
-                      (Position => Ith,
-                       Joltage  => To_Natural (Battery_String (Ith)));
+                      (Position => Ith, Joltage => To_Natural (Battery (Ith)));
                   Minimum := Find_Minimum (Sequence);
                elsif Value > Minimum.Joltage then
                   for Jth in
@@ -103,8 +100,7 @@ procedure Day03 is
                   end loop;
                   Sequence (Sequence'Last) :=
                     Battery_Record'
-                      (Position => Ith,
-                       Joltage  => To_Natural (Battery_String (Ith)));
+                      (Position => Ith, Joltage => To_Natural (Battery (Ith)));
                   Minimum := Find_Minimum (Sequence);
                end if;
             end loop;
