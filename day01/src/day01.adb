@@ -1,52 +1,55 @@
-with HAT;
+with Ada.Containers.Vectors;
+with Ada.Text_IO;
 
 procedure Day01 is
 
-   subtype VString is HAT.VString;
+   package IO renames Ada.Text_IO;
 
    type Turn_Enum is (Left, Right);
 
-   type Instruction is record
+   type Instruction_Record is record
       Direction : Turn_Enum;
       Distance  : Positive;
    end record;
 
-   Length : constant Positive := 4659;
-   Debug  : constant Boolean := False;
+   Debug : constant Boolean := False;
 
-   --  miss ability to use Length as endpoint of array
-   Values : array (1 .. 4659) of Instruction;
+   package Instruction_Vectors is new
+     Ada.Containers.Vectors
+       (Index_Type   => Positive,
+        Element_Type => Instruction_Record);
+   subtype Instruction_Vector is Instruction_Vectors.Vector;
+   Instructions : Instruction_Vector;
 
    procedure Get_Input is
-      Input : HAT.File_Type;
-      Line  : VString;
+      Input : IO.File_Type;
    begin
-      HAT.Open (Input, "input.txt");
-      for Ith in Values'Range loop
-         HAT.Get_Line (Input, Line);
-         Line := HAT.Trim_Both (Line);
-         if HAT.Starts_With (Line, "L") then
-            --  miss indexing for VString
-            Values (Ith).Direction := Left;
-         else
-            Values (Ith).Direction := Right;
-         end if;
-         Values (Ith).Distance :=
-           HAT.Integer_Value (HAT.Slice (Line, 2, HAT.Length (Line)));
+      IO.Open (Input, IO.In_File, "input.txt");
+      while not IO.End_Of_File (Input) loop
+         declare
+            Line        : String := IO.Get_Line (Input);
+            Instruction : Instruction_Record;
+         begin
+            if Line (1) = 'L' then
+               Instruction.Direction := Left;
+            else
+               Instruction.Direction := Right;
+            end if;
+            Instruction.Distance := Positive'Value (Line (2 .. Line'Last));
+            Instructions.Append (Instruction);
+         end;
       end loop;
-      HAT.Close (Input);
+      IO.Close (Input);
    end Get_Input;
 
    function Part_1 return Natural is
       Result   : Natural := 0;
-      --  miss integers modulo n
       Position : Integer := 50;
       Distance : Integer;
    begin
-      for Ith in Values'Range loop
-         --  miss of-style iteration
-         Distance := Values (Ith).Distance;
-         if Values (Ith).Direction = Left then
+      for Instruction of Instructions loop
+         Distance := Instruction.Distance;
+         if Instruction.Direction = Left then
             Distance := -Distance;
          end if;
          Position := (Position + Distance) mod 100;
@@ -64,9 +67,9 @@ procedure Day01 is
       Distance : Integer;
       Cycles   : Integer;
    begin
-      for Ith in Values'Range loop
-         Distance := Values (Ith).Distance;
-         if Values (Ith).Direction = Left then
+      for Instruction of Instructions loop
+         Distance := Instruction.Distance;
+         if Instruction.Direction = Left then
             Distance := -Distance;
          end if;
          Cycles := Distance / 100;
@@ -74,31 +77,30 @@ procedure Day01 is
          Result := Result + abs (Cycles);
          if Debug then
             if Cycles > 0 then
-               HAT.Put ("Cycles: ");
-               HAT.Put_Line (HAT.Image (Cycles));
+               IO.Put ("Cycles: ");
+               IO.Put_Line (Cycles'Image);
             end if;
-            HAT.Put ("Move ");
+            IO.Put ("Move ");
          end if;
          if Distance < 0 then
             if Debug then
-               HAT.Put ("Left ");
-               HAT.Put_Line (Hat.Image (-Distance));
+               IO.Put ("Left ");
+               IO.Put_Line (Distance'Image);
             end if;
             while Distance /= 0 loop
-               --  miss Max attribute of integer
                if Position = 0 or else Distance > -Position then
                   Change := Distance;
                else
                   Change := -Position;
                end if;
                if Debug then
-                  HAT.Put ("   ");
-                  HAT.Put (HAT.Image (Position));
-                  HAT.Put (' ');
-                  HAT.Put (HAT.Image (Distance));
-                  HAT.Put (' ');
-                  HAT.Put (HAT.Image (Change));
-                  HAT.Put (" -> ");
+                  IO.Put ("   ");
+                  IO.Put (Position'Image);
+                  IO.Put (' ');
+                  IO.Put (Distance'Image);
+                  IO.Put (' ');
+                  IO.Put (Change'Image);
+                  IO.Put (" -> ");
                end if;
                Position := Position + Change;
                Distance := Distance - Change;
@@ -109,17 +111,17 @@ procedure Day01 is
                   Result := Result + 1;
                end if;
                if Debug then
-                  HAT.Put (HAT.Image (Position));
-                  HAT.Put (' ');
-                  HAT.Put (HAT.Image (Distance));
-                  HAT.Put (' ');
-                  HAT.Put_Line (Hat.Image (Result));
+                  IO.Put (Position'Image);
+                  IO.Put (' ');
+                  IO.Put (Distance'Image);
+                  IO.Put (' ');
+                  IO.Put_Line (Result'Image);
                end if;
             end loop;
          else
             if Debug then
-               HAT.Put ("Right ");
-               HAT.Put_Line (Hat.Image (Distance));
+               IO.Put ("Right ");
+               IO.Put_Line (Distance'Image);
             end if;
             while Distance /= 0 loop
                if Position = 0 or else Distance < 100 - Position then
@@ -128,13 +130,13 @@ procedure Day01 is
                   Change := 100 - Position;
                end if;
                if Debug then
-                  HAT.Put ("   ");
-                  HAT.Put (HAT.Image (Position));
-                  HAT.Put (' ');
-                  HAT.Put (HAT.Image (Distance));
-                  HAT.Put (' ');
-                  HAT.Put (HAT.Image (Change));
-                  HAT.Put (" -> ");
+                  IO.Put ("   ");
+                  IO.Put (Position'Image);
+                  IO.Put (' ');
+                  IO.Put (Distance'Image);
+                  IO.Put (' ');
+                  IO.Put (Change'Image);
+                  IO.Put (" -> ");
                end if;
                Position := Position + Change;
                Distance := Distance - Change;
@@ -145,11 +147,11 @@ procedure Day01 is
                   Result := Result + 1;
                end if;
                if Debug then
-                  HAT.Put (HAT.Image (Position));
-                  HAT.Put (' ');
-                  HAT.Put (HAT.Image (Distance));
-                  HAT.Put (' ');
-                  HAT.Put_Line (Hat.Image (Result));
+                  IO.Put (Position'Image);
+                  IO.Put (' ');
+                  IO.Put (Distance'Image);
+                  IO.Put (' ');
+                  IO.Put_Line (Result'Image);
                end if;
             end loop;
          end if;
@@ -159,10 +161,8 @@ procedure Day01 is
 
 begin
    Get_Input;
-   --  miss Image attribute (but not that much)
-   --  miss immediate use of "&"
-   HAT.Put ("The password is ");
-   HAT.Put_Line (HAT.Image (Part_1));
-   HAT.Put ("No; it is ");
-   HAT.Put_Line (HAT.Image (Part_2));
+   IO.Put ("The password is ");
+   IO.Put_Line (Part_1'Image);
+   IO.Put ("No; it is ");
+   IO.Put_Line (Part_2'Image);
 end Day01;
