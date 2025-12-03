@@ -1,0 +1,136 @@
+with HAT; use HAT;
+
+procedure Day02 is
+
+   subtype Real is HAT.Real;
+   subtype VString is HAT.VString;
+
+   type ID_Range is record
+      Start, Finish : Positive;
+   end record;
+
+   Sequence_Length : constant Positive := 34;
+   IDs             : array (1 .. 34) of ID_Range;
+   Filename        : constant String (1 .. 9) := "input.txt";
+   --  Sequence_Length : constant Positive := 11;
+   --  IDs             : array (1 .. 11) of ID_Range;
+   --  Filename        : constant String (1 .. 11) := "example.txt";
+
+   procedure Parse_Input (Line : VString) is
+      First_Position  : Positive := 1;
+      Second_Position : Natural;
+      End_Search      : Positive;
+   begin
+      for Ith in 1 .. Sequence_Length loop
+         Second_Position := HAT.Index (Line, "-", First_Position);
+         IDs (Ith).Start :=
+           HAT.Integer_Value
+             (HAT.Slice (Line, First_Position, Second_Position - 1));
+         First_Position := Second_Position + 1;
+         Second_Position := HAT.Index (Line, ",", First_Position);
+         if Second_Position = 0 then
+            Second_Position := HAT.Length (Line) + 1;
+         end if;
+         IDs (Ith).Finish :=
+           HAT.Integer_Value
+             (HAT.Slice (Line, First_Position, Second_Position - 1));
+         First_Position := Second_Position + 1;
+      end loop;
+   end Parse_Input;
+
+   procedure Read_Input is
+      Input : HAT.File_Type;
+      Line  : VString;
+   begin
+      HAT.Open (Input, Filename);
+      HAT.Get_Line (Input, Line);
+      Line := HAT.Trim_Both (Line);
+      HAT.Close (Input);
+      Parse_Input (Line);
+   end Read_Input;
+
+   function Num_Digits (Value : Positive) return Positive is
+      Log10    : constant Real := HAT.Log (10.0);
+      Temp     : Real := HAT.Log (Real (Value + 1)) / Log10;
+      --  mis-documented as Truncate
+      Int_Part : Integer := HAT.Trunc (Temp);
+   begin
+      if Temp - Real (Int_Part) > 0.0 then
+         return Int_Part + 1;
+      else
+         return Int_Part;
+      end if;
+   end Num_Digits;
+
+   function Part_1 return Natural is
+      Result    : Natural := 0;
+      Element   : ID_Range;
+      Length    : Positive;
+      As_String : VString;
+   begin
+      for Ith in 1 .. Sequence_Length loop
+         Element := IDs (Ith);
+         for ID in Element.Start .. Element.Finish loop
+            Length := Num_Digits (ID);
+            if Length mod 2 = 0 then
+               As_String := HAT.Image (ID);
+               if HAT.Slice (As_String, 1, Length / 2)
+                 = HAT.Slice (As_String, Length / 2 + 1, Length)
+               then
+                  Result := Result + ID;
+               end if;
+            end if;
+         end loop;
+      end loop;
+      return Result;
+   end Part_1;
+
+   function Repeats_With_Length
+     (Value : VString; Sublength : Positive) return Boolean
+   is
+      Length        : constant Positive := HAT.Length (Value);
+      Start, Finish : Positive;
+   begin
+      if Length mod Sublength /= 0 then
+         return False;
+      end if;
+      for Multiple in 1 .. Length / Sublength - 1 loop
+         Start := Multiple * Sublength + 1;
+         Finish := (Multiple + 1) * Sublength;
+         if HAT.Slice (Value, 1, Sublength) /= HAT.Slice (Value, Start, Finish)
+         then
+            return False;
+         end if;
+      end loop;
+      return True;
+   end Repeats_With_Length;
+
+   function Part_2 return Natural is
+      Result    : Natural := 0;
+      Element   : ID_Range;
+      Length    : Positive;
+      As_String : VString;
+   begin
+      for Ith in 1 .. Sequence_Length loop
+         Element := IDs (Ith);
+         for ID in Element.Start .. Element.Finish loop
+            Length := Num_Digits (ID);
+            for Sublength in 1 .. Length / 2 loop
+               As_String := HAT.Image (ID);
+               if Repeats_With_Length (As_String, Sublength) then
+                  Result := Result + ID;
+                  exit;
+               end if;
+            end loop;
+         end loop;
+      end loop;
+      return Result;
+   end Part_2;
+
+begin
+   Read_Input;
+   HAT.Put ("The sum of invalid id's is ");
+   HAT.Put_Line (HAT.Image (Part_1));
+   HAT.Put ("Upon further investigation, it's ");
+   HAT.Put_Line (HAT.Image (Part_2));
+end Day02;
