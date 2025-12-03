@@ -1,14 +1,11 @@
 #!/usr/bin/env dotnet
 
-using System.IO;
-using System.Collections.Generic;
-
-enum Turn { Left, Right };
-
-record InstructionRecord(Turn Direction, int Distance);
-
 public class Program
 {
+
+    enum Turn { Left, Right };
+
+    record InstructionRecord(Turn Direction, int Distance);
 
     static List<InstructionRecord> Get_Input()
     {

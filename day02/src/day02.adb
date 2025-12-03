@@ -134,6 +134,7 @@ procedure Day02 is
                begin
                   if Repeats_With_Length (As_String, Sublength) then
                      Result := Result + ID;
+                     IO.Put_Line ("found" & Id'Image & Sublength'Image);
                      exit;
                   end if;
                end;
