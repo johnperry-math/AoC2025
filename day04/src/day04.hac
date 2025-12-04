@@ -1,0 +1,133 @@
+with HAT;
+
+procedure Day04 is
+
+   subtype VString is HAT.VString;
+
+   --  Debug     : constant Boolean := True;
+   --  Dimension : constant := 10;
+   --  Filename  : constant String (1 .. 11) := "example.txt";
+   Debug     : constant Boolean := True;
+   Dimension : constant := 140;
+   Filename  : constant String (1 .. 9) := "input.txt";
+
+   subtype Dimension_Range is Integer range 1 .. Dimension;
+
+   Maze : array (Dimension_Range, Dimension_Range) of Boolean;
+
+   procedure Read_Input is
+      Input : HAT.File_Type;
+      Line  : VString;
+   begin
+      HAT.Open (Input, Filename);
+      for Row in Dimension_Range loop
+         HAT.Get_Line (Input, Line);
+         for Col in Dimension_Range loop
+            Maze (Row, Col) := HAT.Element (Line, Col) = '@';
+         end loop;
+      end loop;
+      HAT.Close (Input);
+   end Read_Input;
+
+   type Position_Record is record
+      Row, Col : Dimension_Range;
+   end record;
+
+   Default_Length : constant := 2000;
+   subtype Vector_Range is Integer range 1 .. Default_Length;
+   type Entry_Array is array (Vector_Range) of Position_Record;
+   type Position_Vector is record
+      Entries    : Entry_Array;
+      Last_Entry : Vector_Range;
+   end record;
+
+   procedure Initialize (Vector : in out Position_Vector) is
+   begin
+      Vector.Last_Entry := 1;
+   end Initialize;
+
+   function Empty (Vector : Position_Vector) return Boolean is
+   begin
+      return Vector.Last_Entry <= 1;
+   end Empty;
+
+   function Length (Vector : Position_Vector) return Natural is
+   begin
+      return Vector.Last_Entry - 1;
+   end Length;
+
+   procedure Append (Vector : in out Position_Vector; Value : Position_Record)
+   is
+   begin
+      if Vector.Last_Entry > Default_Length then
+         HAT.Put_Line ("Erroneous execution: vector not long enough");
+      end if;
+      Vector.Entries (Vector.Last_Entry) := Value;
+      Vector.Last_Entry := Vector.Last_Entry + 1;
+   end Append;
+
+   procedure Accessible_TP (Result : out Position_Vector) is
+      New_Record : Position_Record;
+      Neighbors  : Natural;
+   begin
+      Initialize (Result);
+      for Row in Dimension_Range loop
+         for Col in Dimension_Range loop
+            if Maze (Row, Col) then
+               Neighbors := 0;
+               for Row_Offset in -1 .. 1 loop
+                  if Row + Row_Offset in Dimension_Range then
+                     for Col_Offset in -1 .. 1 loop
+                        if Col + Col_Offset in Dimension_Range
+                          and then (Col_Offset /= 0 or else Row_Offset /= 0)
+                        then
+                           if Maze (Row + Row_Offset, Col + Col_Offset) then
+                              Neighbors := Neighbors + 1;
+                           end if;
+                        end if;
+                     end loop;
+                  end if;
+               end loop;
+               if Neighbors < 4 then
+                  New_Record.Row := Row;
+                  New_Record.Col := Col;
+                  Append (Result, New_Record);
+               end if;
+            end if;
+         end loop;
+      end loop;
+   end Accessible_TP;
+
+   function Part_2 return Natural is
+      Result    : Natural := 0;
+      To_Remove : Position_Vector;
+   begin
+      Accessible_TP (To_Remove);
+      while not Empty (To_Remove) loop
+         Result := Result + Length (To_Remove);
+         for Ith in Vector_Range'First .. Length (To_Remove) loop
+            Maze (To_Remove.Entries (Ith).Row, To_Remove.Entries (Ith).Col) :=
+              False;
+         end loop;
+         Accessible_TP (To_Remove);
+      end loop;
+      return Result;
+   end Part_2;
+
+   Part_1_Result : Position_Vector;
+
+begin
+   for Row in Dimension_Range loop
+      for Col in Dimension_Range loop
+         Maze (Row, Col) := False;
+      end loop;
+   end loop;
+   Read_Input;
+   Accessible_TP (Part_1_Result);
+   HAT.Put ("The forklift can access ");
+   HAT.Put (HAT.Image (Length (Part_1_Result)));
+   HAT.Put_Line (" rolls");
+   HAT.Put ("Altogether it can remove ");
+   HAT.Put (HAT.Image (Part_2));
+   HAT.Put_Line (" rolls");
+end Day04;
