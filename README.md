@@ -25,10 +25,10 @@ which does not compile _full_ Ada, but a subset of it.
 While I'm at it, I'll document differences I find between HAC and Ada 2022.
 
 * Problems in order of appearance
-  * 🚪 Day 1: Secret Entrance
-  * 🎁 Day 2: Gift Shop
-  * 🔋 Day 3: Lobby
-  * 🧻 Day 4: Printing Department
+  * 🚪 [Day 1](#-day-1-secret-entrance): Secret Entrance
+  * 🎁 [Day 2](#-day-2-gift-shop): Gift Shop
+  * 🔋 [Day 3](#-day-3-lobby): Lobby
+  * 🧻 [Day 4](#-day-4-printing-department): Printing Department
 
 ## Problems in order of appearance
 
