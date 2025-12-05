@@ -1,0 +1,10 @@
+name = "day05"
+description = "2025 Advent of Code in (HAC) Ada, Day 05"
+version = "0.1.0-dev"
+
+authors = ["John Perry"]
+maintainers = ["John Perry <devotus@yahoo.com>"]
+maintainers-logins = ["johnperry-math"]
+licenses = "CC-BY-SA-3.0"
+website = ""
+tags = ["advent-of-code", "ada", "hac", "2025", "day-05"]

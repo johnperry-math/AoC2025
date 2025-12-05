@@ -29,6 +29,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🎁 [Day 2](#-day-2-gift-shop): Gift Shop
   * 🔋 [Day 3](#-day-3-lobby): Lobby
   * 🧻 [Day 4](#-day-4-printing-department): Printing Department
+  * 🦠 [Day 5](#-day-5-cafeteria): Cafeteria
 
 ## Problems in order of appearance
 
@@ -182,7 +183,7 @@ Cue the puns...
 
 #### Unusual tools
 
-None in particular.
+I had to create a vector type in HAC.
 
 #### Experience
 
@@ -198,3 +199,33 @@ With C#:
   This doesn't make a lot of sense,
   but as I discovered when converting Day 3 to C# (as I did after Day 4),
   there's not a lot about `Enumerable.Range` that makes sense.
+
+### 🦠 Day 5: Cafeteria
+
+The elves have such crack programmers writing the cafeteria's inventory software
+that they can't figure out which ingredients are spoiled and which are fresh.
+
+In part 1, you identify the fersh ingredients.
+
+In part 2, you determine how many fresh ingredients are possible.
+
+#### Unusual tools
+
+* I dunno if large numbers were required, but
+  in Ada I went ahead and defined a range of 64-bit numbers,
+  and in C# I used `long`.
+* I had to create a vector type in HAC again.
+
+#### Experience
+
+Again, very straightforward.
+
+With C#:
+* Unlike Ada's `for ... of`, `foreach` does not return a reference,
+  but rather a copy of an element.
+  (This may be because I used a `struct` rather than a `class`.
+  -- **confirmed**!)
+* Also unlike Ada, I cannot modify directly the fields of a structure in an array;
+  I have to replace the array element entirely.
+  (The same cause.)
+  

@@ -1,0 +1,173 @@
+with HAT;
+
+procedure Day05 is
+
+   subtype VString is HAT.VString;
+
+   type ID_Array_1000 is array (1 .. 1000) of Natural;
+
+   type ID_Vector is record
+      Last_Entry : Natural;
+      Entries    : ID_Array_1000;
+   end record;
+
+   procedure Initialize_IDs (Vector : out ID_Vector) is
+   begin
+      Vector.Last_Entry := 0;
+   end Initialize_IDs;
+
+   function Length_IDs (Vector : ID_Vector) return Natural is
+   begin
+      return Vector.Last_Entry;
+   end Length_IDs;
+
+   function Is_Empty_IDs (Vector : ID_Vector) return Boolean is
+   begin
+      return Vector.Last_Entry = 0;
+   end Is_Empty_IDs;
+
+   procedure Append_IDs (Vector : in out ID_Vector; Element : Natural) is
+   begin
+      Vector.Last_Entry := Vector.Last_Entry + 1;
+      Vector.Entries (Vector.Last_Entry) := Element;
+   end Append_IDs;
+
+   Questionable_IDs : ID_Vector;
+
+   type ID_Range_Record is record
+      Start, Finish : Natural;
+   end record;
+
+   type ID_Range_Array_1000 is array (1 .. 1000) of ID_Range_Record;
+
+   type ID_Range_Vector is record
+      Last_Entry : Natural;
+      Entries    : ID_Range_Array_1000;
+   end record;
+
+   procedure Initialize_ID_Ranges (Vector : out ID_Range_Vector) is
+   begin
+      Vector.Last_Entry := 0;
+   end Initialize_ID_Ranges;
+
+   function Length_ID_Ranges (Vector : ID_Range_Vector) return Natural is
+   begin
+      return Vector.Last_Entry;
+   end Length_ID_Ranges;
+
+   function Is_Empty_ID_Ranges (Vector : ID_Range_Vector) return Boolean is
+   begin
+      return Vector.Last_Entry = 0;
+   end Is_Empty_ID_Ranges;
+
+   procedure Append_ID_Ranges
+     (Vector : in out ID_Range_Vector; Element : ID_Range_Record) is
+   begin
+      Vector.Last_Entry := Vector.Last_Entry + 1;
+      Vector.Entries (Vector.Last_Entry) := Element;
+   end Append_ID_Ranges;
+
+   ID_Ranges : ID_Range_Vector;
+
+   procedure Read_Input is
+      Input    : HAT.File_Type;
+      Line     : VString;
+      Position : Positive;
+      New_ID   : ID_Range_Record;
+   begin
+      Initialize_IDs (Questionable_IDs);
+      Initialize_ID_Ranges (ID_Ranges);
+      HAT.Open (Input, "input.txt");
+      --  first read ranges
+      loop
+         HAT.Get_Line (Input, Line);
+         Line := HAT.Trim_Both (Line);
+         if HAT.Length (Line) = 0 then
+            exit;
+         else
+            Position := HAT.Index (Line, "-");
+            New_ID.Start :=
+              HAT.Integer_Value (HAT.Slice (Line, 1, Position - 1));
+            New_ID.Finish :=
+              HAT.Integer_Value
+                (HAT.Slice (Line, Position + 1, HAT.Length (Line)));
+            Append_ID_Ranges (ID_Ranges, New_ID);
+         end if;
+      end loop;
+      --  now read items
+      while not HAT.End_Of_File (Input) loop
+         HAT.Get_Line (Input, Line);
+         Line := HAT.Trim_Both (Line);
+         Append_IDs (Questionable_IDs, HAT.Integer_Value (Line));
+      end loop;
+      HAT.Close (Input);
+   end Read_Input;
+
+   function Part_1 return Natural is
+      Result   : Natural := 0;
+      ID       : Positive;
+      ID_Range : ID_Range_Record;
+   begin
+      for Ith in 1 .. Length_IDs (Questionable_IDs) loop
+         ID := Questionable_IDs.Entries (Ith);
+         for Jth in 1 .. Length_ID_Ranges (ID_Ranges) loop
+            ID_Range := ID_Ranges.Entries (Jth);
+            if ID in ID_Range.Start .. ID_Range.Finish then
+               Result := Result + 1;
+               exit;
+            end if;
+         end loop;
+      end loop;
+      return Result;
+   end Part_1;
+
+   function Part_2 (Simplify_Me : ID_Range_Vector) return Natural is
+      Simplified                 : ID_Range_Vector;
+      Simplified_Somewhere       : Boolean := False;
+      Simplified_New             : Boolean;
+      Result                     : Natural;
+      Each, New_Range, Old_Range : ID_Range_Record;
+   begin
+      Initialize_ID_Ranges (Simplified);
+      for Ith in 1 .. Length_ID_Ranges (Simplify_Me) loop
+         New_Range := Simplify_Me.Entries (Ith);
+         Simplified_New := False;
+         for Jth in 1 .. Length_ID_Ranges (Simplified) loop
+            Old_Range := Simplified.Entries (Jth);
+            if Old_Range.Finish >= New_Range.Start
+              and then New_Range.Finish >= Old_Range.Start
+            then
+               Old_Range.Start := HAT.Min (Old_Range.Start, New_Range.Start);
+               Old_Range.Finish :=
+                 HAT.Max (Old_Range.Finish, New_Range.Finish);
+               Simplified.Entries (Jth) := Old_Range;
+               Simplified_Somewhere := True;
+               Simplified_New := True;
+               exit;
+            end if;
+         end loop;
+         if not Simplified_New then
+            Append_ID_Ranges (Simplified, New_Range);
+         end if;
+      end loop;
+      if Simplified_Somewhere then
+         Result := Part_2 (Simplified);
+      else
+         Result := 0;
+         for Ith in 1 .. Length_ID_Ranges (Simplified) loop
+            Each := Simplified.Entries (Ith);
+            Result := Result + Each.Finish - Each.Start + 1;
+         end loop;
+      end if;
+      return Result;
+   end Part_2;
+
+begin
+   Read_Input;
+   HAT.Put ("There are ");
+   HAT.Put (HAT.Image (Part_1));
+   HAT.Put_Line (" fresh ingredients");
+   HAT.Put ("The ranges consider ");
+   HAT.Put (HAT.Image (Part_2 (ID_Ranges)));
+   HAT.Put_Line (" ingredients fresh");
+end Day05;
