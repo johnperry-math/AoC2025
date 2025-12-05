@@ -205,7 +205,7 @@ With C#:
 The elves have such crack programmers writing the cafeteria's inventory software
 that they can't figure out which ingredients are spoiled and which are fresh.
 
-In part 1, you identify the fersh ingredients.
+In part 1, you identify the fresh ingredients.
 
 In part 2, you determine how many fresh ingredients are possible.
 
