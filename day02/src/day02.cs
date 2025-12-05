@@ -1,7 +1,6 @@
 #!/usr/bin/env dotnet
 
 using System.Collections;
-using System.Runtime.InteropServices.Swift;
 
 public class Program
 {
@@ -48,11 +47,10 @@ public class Program
         const string path = "../input.txt";
         try
         {
-            using (StreamReader reader = new(path))
-            {
-                string? line = reader.ReadLine() ?? throw new Exception("received an empty input.txt?!?");
-                return Parse_Input(line);
-            }
+            using StreamReader reader = new(path);
+            string? line = reader.ReadLine()
+                ?? throw new Exception("received an empty input.txt?!?");
+            return Parse_Input(line);
         }
         catch (Exception e)
         {

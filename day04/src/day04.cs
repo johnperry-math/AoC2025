@@ -14,7 +14,8 @@ public class Program
             using StreamReader reader = new(path);
             foreach (int row in Enumerable.Range(0, DIMENSION))
             {
-                string? line = reader.ReadLine() ?? throw new Exception("unexpected end of file");
+                string? line = reader.ReadLine()
+                    ?? throw new Exception("unexpected end of file");
                 foreach (int col in Enumerable.Range(0, DIMENSION))
                 {
                     maze[row, col] = line[col] == '@';
