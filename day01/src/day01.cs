@@ -14,18 +14,16 @@ public class Program
 
         try
         {
-            using (StreamReader reader = new(path))
+            using StreamReader reader = new(path);
+            string? line;
+            while ((line = reader.ReadLine()) != null)
             {
-                string? line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    instructions.Add(
-                        new(
-                            line[0] == 'L' ? Turn.Left : Turn.Right,
-                            int.Parse(line.Substring(1, line.Length - 1))
-                        )
-                    );
-                }
+                instructions.Add(
+                    new(
+                        line[0] == 'L' ? Turn.Left : Turn.Right,
+                        int.Parse(line[1..])
+                    )
+                );
             }
         }
         catch (Exception e)
@@ -70,7 +68,7 @@ public class Program
                 distance = -distance;
             }
             cycles = distance / 100;
-            distance = distance - cycles * 100;
+            distance -= -cycles * 100;
             result += Math.Abs(cycles);
             if (distance < 0)
             {

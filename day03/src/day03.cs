@@ -117,10 +117,8 @@ public class Program
             }
             foreach (Battery_Record battery in sequence)
             {
-                Console.Write($"{battery.joltage}");
                 joltage = joltage * 10 + battery.joltage;
             }
-            Console.WriteLine();
             result += joltage;
         }
         return result;

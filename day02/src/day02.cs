@@ -12,7 +12,7 @@ public class Program
 
     static List<ID_Range_Record> Parse_Input(string line)
     {
-        List<ID_Range_Record> result = new();
+        List<ID_Range_Record> result = [];
         int first_position = 0;
         int second_position;
         int num_ranges = line.Count(',') + 1;
@@ -144,8 +144,10 @@ public class Program
                 if (length % 2 == 0)
                 {
                     string as_string = id.ToString();
-                    // Console.WriteLine($"{id} {length} {as_string[0..(length / 2)]} {as_string[(length / 2)..length]}");
-                    if (as_string[0..(length / 2)] == as_string[(length / 2)..length])
+                    if (
+                        as_string[0..(length / 2)]
+                        == as_string[(length / 2)..length]
+                    )
                     {
                         result += id;
                     }
@@ -201,6 +203,8 @@ public class Program
     {
         List<ID_Range_Record> id_ranges = Read_Input();
         Console.WriteLine($"The sum of invalid id's is {Part_1(id_ranges)}");
-        Console.WriteLine($"Upon further investigation, it's {Part_2(id_ranges)}");
+        Console.WriteLine(
+            $"Upon further investigation, it's {Part_2(id_ranges)}"
+        );
     }
 }

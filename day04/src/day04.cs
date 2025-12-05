@@ -4,7 +4,7 @@ public class Program
 {
 
     const int DIMENSION = 140;
-    static bool[,] maze = new bool[DIMENSION, DIMENSION];
+    static readonly bool[,] maze = new bool[DIMENSION, DIMENSION];
 
     static void Read_Input()
     {
