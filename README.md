@@ -236,9 +236,10 @@ You do something stupid, fall down a trash chute, and end up in a trash compacto
 Shades of Star Wars, except that
 these cephalopods remember you from the 2021 Advent of Code,
 so they're not inclined to drag you under water
-before performing whose knows what sort of monstrous acts on you.
-No, they have even more insidious plans for you:
-help their children with their math homework.
+before performing unspeakably monstrous acts on you.
+No, their plans are yet more insidious:
+
+😨 help their children complete their math homework! 😱
 
 In part 1, you add or multiply the numbers arranged in each row,
 separated by empty columns.
