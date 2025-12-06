@@ -30,6 +30,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🔋 [Day 3](#-day-3-lobby): Lobby
   * 🧻 [Day 4](#-day-4-printing-department): Printing Department
   * 🦠 [Day 5](#-day-5-cafeteria): Cafeteria
+  * ➕ [Day 6](#-day-6-trash-compactor): Trash Compactor
 
 ## Problems in order of appearance
 
@@ -229,3 +230,30 @@ With C#:
   I have to replace the array element entirely.
   (The same cause.)
   
+### ➕ Day 6: Trash Compactor
+
+You do something stupid, fall down a trash chute, and end up in a trash compactor.
+Shades of Star Wars, except that
+these cephalopods remember you from the 2021 Advent of Code,
+so they're not inclined to drag you under water
+before performing whose knows what sort of monstrous acts on you.
+No, they have even more insidious plans for you:
+help their children with their math homework.
+
+In part 1, you add or multiply the numbers arranged in each row,
+separated by empty columns.
+
+In part 2, the adults explain that you misread the numbers:
+they are arranged by columns, separated by empty columns.
+(This part was pretty cool.)
+
+#### Unusual tools
+* Made use of Ada 2022's `'Reduce` attribute.
+
+#### Experience
+
+I really enjoyed this one.
+
+With Ada:
+* Encountered a bug in `case` expressions and the `'Reduce` attribute.
+  I need to investigate this further and report a bug.
