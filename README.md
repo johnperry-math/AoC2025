@@ -30,7 +30,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🔋 [Day 3](#-day-3-lobby): Lobby
   * 🧻 [Day 4](#-day-4-printing-department): Printing Department
   * 🦠 [Day 5](#-day-5-cafeteria): Cafeteria
-  * ➕ [Day 6](#-day-6-trash-compactor): Trash Compactor
+  * 🦑 [Day 6](#-day-6-trash-compactor): Trash Compactor
 
 ## Problems in order of appearance
 
@@ -230,7 +230,7 @@ With C#:
   I have to replace the array element entirely.
   (The same cause.)
   
-### ➕ Day 6: Trash Compactor
+### 🦑 Day 6: Trash Compactor
 
 You do something stupid, fall down a trash chute, and end up in a trash compactor.
 Shades of Star Wars, except that
