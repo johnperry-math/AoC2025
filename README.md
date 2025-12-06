@@ -258,3 +258,8 @@ I really enjoyed this one.
 With Ada:
 * Encountered a bug in `case` expressions and the `'Reduce` attribute.
   I need to investigate this further and report a bug.
+
+With HAC:
+* The inability to create an array with a length not known at compile time
+  makes things much more difficult than Ada.
+  Likewise the lack of generics.

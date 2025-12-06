@@ -1,0 +1,265 @@
+with HAT;
+
+procedure Day06 is
+
+   subtype VString is HAT.VString;
+
+   subtype Line_Range is Integer range 1 .. 4;
+
+   type Operation_Enum is (Sum, Product);
+
+   type Operands_Array is array (1 .. 10) of Integer;
+
+   type Operands_Vector is record
+      Entries    : Operands_Array;
+      Last_Entry : Natural;
+   end record;
+
+   procedure Initialize_Operands (Operands : out Operands_Vector) is
+   begin
+      Operands.Last_Entry := 0;
+   end Initialize_Operands;
+
+   function Operands_Length (Operands : Operands_Vector) return Natural is
+   begin
+      return Operands.Last_Entry;
+   end Operands_Length;
+
+   function Is_Empty_Operands (Operands : Operands_Vector) return Boolean is
+   begin
+      return Operands.Last_Entry = 0;
+   end Is_Empty_Operands;
+
+   procedure Append_Operand
+     (Operands : in out Operands_Vector; Operand : Integer) is
+   begin
+      Operands.Last_Entry := Operands.Last_Entry + 1;
+      Operands.Entries (Operands.Last_Entry) := Operand;
+   end Append_Operand;
+
+   type Problem_Record is record
+      Operands  : Operands_Vector;
+      Operation : Operation_Enum;
+   end record;
+
+   function Problem_Sum (Problem : Problem_Record) return Integer is
+      Result : Integer := 0;
+   begin
+      for Ith in 1 .. Operands_Length (Problem.Operands) loop
+         Result := Result + Problem.Operands.Entries (Ith);
+      end loop;
+      return Result;
+   end Problem_Sum;
+
+   function Problem_Product (Problem : Problem_Record) return Integer is
+      Result : Integer := 1;
+   begin
+      for Ith in 1 .. Operands_Length (Problem.Operands) loop
+         Result := Result * Problem.Operands.Entries (Ith);
+      end loop;
+      return Result;
+   end Problem_Product;
+
+   type Problem_Array is array (1 .. 1000) of Problem_Record;
+
+   type Problem_Vector is record
+      Entries    : Problem_Array;
+      Last_Entry : Natural;
+   end record;
+
+   procedure Initialize_Problems (Problems : out Problem_Vector) is
+   begin
+      Problems.Last_Entry := 0;
+   end Initialize_Problems;
+
+   function Problems_Length (Problems : Problem_Vector) return Natural is
+   begin
+      return Problems.Last_Entry;
+   end Problems_Length;
+
+   function Is_Empty_Problems (Problems : Problem_Vector) return Boolean is
+   begin
+      return Problems.Last_Entry = 0;
+   end Is_Empty_Problems;
+
+   procedure Append_Problem
+     (Problems : in out Problem_Vector; Problem : Problem_Record) is
+   begin
+      Problems.Last_Entry := Problems.Last_Entry + 1;
+      Problems.Entries (Problems.Last_Entry) := Problem;
+   end Append_Problem;
+
+   Problems : Problem_Vector;
+
+   function Next_Space_From (Line : VString; From : Positive) return Positive
+   is
+      Position : Positive := From;
+   begin
+      while Position < HAT.Length (Line)
+        and then HAT.Element (Line, Position) /= ' '
+      loop
+         Position := Position + 1;
+      end loop;
+      if Position = HAT.Length (Line) then
+         Position := Position + 1;
+      end if;
+      return Position;
+   end Next_Space_From;
+
+   function Next_Column_From (Line : VString; From : Positive) return Positive
+   is
+      Position : Positive := Next_Space_From (Line, From);
+   begin
+      while Position < HAT.Length (Line)
+        and then HAT.Element (Line, Position) = ' '
+      loop
+         Position := Position + 1;
+      end loop;
+      return Position;
+   end Next_Column_From;
+
+   procedure Read_Input is
+      Input          : HAT.File_Type;
+      Line           : VString;
+      Position       : Positive;
+      Space_Position : Positive;
+      Value          : Integer;
+      New_Problem    : Problem_Record;
+   begin
+      Initialize_Problems (Problems);
+      HAT.Open (Input, "input.txt");
+      --  first operand
+      HAT.Get_Line (Input, Line);
+      Position := 1;
+      while Position < HAT.Length (Line) loop
+         Space_Position := Next_Space_From (Line, Position);
+         Value :=
+           HAT.Integer_Value (HAT.Slice (Line, Position, Space_Position - 1));
+         Initialize_Operands (New_Problem.Operands);
+         Append_Operand (New_Problem.Operands, Value);
+         Append_Problem (Problems, New_Problem);
+         Position := Next_Column_From (Line, Position);
+      end loop;
+      --  remaining operands
+      for Ith in 2 .. 4 loop
+         HAT.Get_Line (Input, Line);
+         Position := 1;
+         for Jth in 1 .. Natural (Problems_Length (Problems)) loop
+            Space_Position := Next_Space_From (Line, Position);
+            Value :=
+              HAT.Integer_Value
+                (HAT.Slice (Line, Position, Space_Position - 1));
+            Append_Operand (Problems.Entries (Jth).Operands, Value);
+            Position := Next_Column_From (Line, Position);
+         end loop;
+      end loop;
+      --  operation
+      HAT.Get_Line (Input, Line);
+      Position := 1;
+      for Ith in 1 .. Problems_Length (Problems) loop
+         if HAT.Element (Line, Position) = '+' then
+            Problems.Entries (Ith).Operation := Sum;
+         else
+            Problems.Entries (Ith).Operation := Product;
+         end if;
+         Position := Next_Column_From (Line, Position);
+      end loop;
+      HAT.Close (Input);
+   end Read_Input;
+
+   function Solution (Problem_Set : Problem_Vector) return Integer is
+      Result  : Natural := 0;
+      Value   : Natural;
+      Problem : Problem_Record;
+   begin
+      for Ith in 1 .. Problems_Length (Problem_Set) loop
+         Problem := Problem_Set.Entries (Ith);
+         case Problem.Operation is
+            when Sum     =>
+               Value := Problem_Sum (Problem);
+
+            when Product =>
+               Value := Problem_Product (Problem);
+         end case;
+         Result := Result + Value;
+      end loop;
+      return Result;
+   end Solution;
+
+   Revised_Problems : Problem_Vector;
+
+   Line_Length : constant := 3747;
+
+   type Number_Array is array (Line_Range) of String (1 .. Line_Length);
+
+   procedure Generate_Transpose_Problem
+     (Number_Lines            : Number_Array;
+      Problem_Number          : in out Positive;
+      Position, Next_Position : Positive)
+   is
+      Num_Operands     : Positive := Next_Position - Position - 1;
+      --  the inability to make an array of non-constant length... :-(
+      Transposed_Lines : array (1 .. 10) of String (Line_Range);
+      New_Problem      : Problem_Record;
+      Operand          : Natural;
+      Dummy            : Positive;
+   begin
+      Initialize_Operands (New_Problem.Operands);
+      for Ith in Line_Range loop
+         for Jth in 1 .. Num_Operands loop
+            Transposed_Lines (Jth) (Ith) :=
+              Number_Lines (Ith) (Position + Jth - 1);
+         end loop;
+      end loop;
+      New_Problem.Operation := Problems.Entries (Problem_Number).Operation;
+      Problem_Number := Problem_Number + 1;
+      for Ith in 1 .. Num_Operands loop
+         Operand :=
+           HAT.Integer_Value (HAT.To_VString (Transposed_Lines (Ith)));
+         Append_Operand (New_Problem.Operands, Operand);
+      end loop;
+      Append_Problem (Revised_Problems, New_Problem);
+   end Generate_Transpose_Problem;
+
+   procedure Reread_Input is
+      Number_Lines            : Number_Array;
+      Operation_Line          : String (1 .. Line_Length);
+      Position, Next_Position : Positive;
+      Problem_Number          : Positive := 1;
+      Input                   : HAT.File_Type;
+   begin
+      Initialize_Problems (Revised_Problems);
+      --  read in all the lines
+      HAT.Open (Input, "input.txt");
+      for Ith in Line_Range loop
+         HAT.Get_Line (Input, Number_Lines (Ith));
+      end loop;
+      HAT.Get_Line (Input, Operation_Line);
+      HAT.Close (Input);
+      --  transpose the numbers, making it easier to parse
+      Position := 1;
+      while Position <= Line_Length loop
+         Next_Position := Position + 1;
+         while Next_Position < Line_Length
+           and then Operation_Line (Next_Position) = ' '
+         loop
+            Next_Position := Next_Position + 1;
+         end loop;
+         --  add 2 for a phantom column separator
+         if Next_Position = Line_Length then
+            Next_Position := Line_Length + 2;
+         end if;
+         Generate_Transpose_Problem
+           (Number_Lines, Problem_Number, Position, Next_Position);
+         Position := Next_Position;
+      end loop;
+   end Reread_Input;
+
+begin
+   Read_Input;
+   HAT.Put ("The sum of answers is ");
+   HAT.Put_Line (HAT.Image (Solution (Problems)));
+   Reread_Input;
+   HAT.Put ("Read correctly, it's ");
+   HAT.Put_Line (HAT.Image (Solution (Revised_Problems)));
+end Day06;
