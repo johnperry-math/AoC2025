@@ -1,7 +1,5 @@
 #!/usr/bin/env dotnet
 
-using System.IO.Pipelines;
-
 public class Program
 {
     static readonly List<long> questionable_ids = [];

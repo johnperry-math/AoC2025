@@ -13,7 +13,6 @@ procedure Day06 is
 
    package Number_IO is new IO.Integer_IO (Num => Number);
 
-   --  type Operands_Array is array (Line_Range) of Number;
    type Operation_Enum is (Sum, Product);
 
    package Operands_Vectors is new

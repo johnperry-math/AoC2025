@@ -250,10 +250,14 @@ they are arranged by columns, separated by empty columns.
 
 #### Unusual tools
 * Made use of Ada 2022's `'Reduce` attribute.
+* In C#, made use of
+  * `String.Split`
+  * `IEnumerable.Aggregate`
+  * `String.IndexOfAny`
 
 #### Experience
 
-I really enjoyed this one.
+I really enjoyed the Ada implementation of this one.
 
 With Ada:
 * Encountered a bug in `case` expressions and the `'Reduce` attribute.
@@ -263,3 +267,16 @@ With HAC:
 * The inability to create an array with a length not known at compile time
   makes things much more difficult than Ada.
   Likewise the lack of generics.
+
+With C#:
+* I am beginning to dread having to work with C#.
+* At least `Enumerable.Range` worked properly today.
+* The static analzyer isn't always smart enough to figure out
+  when a nullable variable is not null.
+  I had an `Enumerable.Range(0, 4)` that initializes each element of 
+  a `string?[4] number_lines` and it kept complaining that
+  some element might be null.
+* In Ada I managed to make parsing Part 2 work in a very natural,
+  intuitive fashion,
+  but I really struggled with parsing in C# today, especially in Part 2.
+  
