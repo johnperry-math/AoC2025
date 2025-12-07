@@ -1,4 +1,4 @@
-# Advent of Code 202t in (HAC) Ada -- and C#?!?
+# Advent of Code 2025 in (HAC) Ada -- and C#?!?
 
 [<img src="ada_logo.svg" height="200">](ada_logo.svg)
 [<img src="hac_logo.svg" height="200">](hac_logo.svg)
