@@ -1,10 +1,5 @@
 pragma Ada_2022;
 
-with Ada.Containers.Hashed_Sets;
---  with Ada.Containers.Ordered_Sets;
---  with Ada.Containers.Synchronized_Queue_Interfaces;
---  with Ada.Containers.Unbounded_Synchronized_Queues;
---  with Ada.Containers.Vectors;
 with Ada.Text_IO;
 
 procedure Day07 is
@@ -27,23 +22,7 @@ procedure Day07 is
       Row : Row_Range;
    end record;
 
-   function "<" (Left, Right : Position_Record) return Boolean
-   is (Left.Row < Right.Row
-       or else (Left.Row = Right.Row and then Left.Col < Right.Col));
-
    Start_Position : Position_Record;
-
-   function Position_Hash
-     (Value : Position_Record) return Ada.Containers.Hash_Type
-   is (Ada.Containers.Hash_Type
-         (Value.Col + Value.Row * (Col_Range'Last - Col_Range'First + 1)));
-
-   package Position_Sets is new
-     Ada.Containers.Hashed_Sets
-       (Element_Type        => Position_Record,
-        Hash                => Position_Hash,
-        Equivalent_Elements => "=");
-   subtype Position_Set is Position_Sets.Set;
 
    procedure Read_Input is
       Input : IO.File_Type;
@@ -71,25 +50,22 @@ procedure Day07 is
       IO.Close (Input);
    end Read_Input;
 
+   type Row_Set_Array is array (Col_Range) of Boolean;
+
    function Part_1 return Natural is
       Result     : Natural := 0;
-      Curr, Next : Position_Set;
+      Curr, Next : Row_Set_Array;
    begin
-      Curr.Insert (Start_Position);
-      for Row in Row_Range'First .. Row_Range'Last - 1 loop
-         Next.Clear;
-         for Tachyon of Curr loop
-            if Manifold (Tachyon.Row, Tachyon.Col) = Empty then
-               Next.Include
-                 (Position_Record'
-                    (Col => Tachyon.Col, Row => Tachyon.Row + 1));
+      Curr := [others => False];
+      Curr (Start_Position.Col) := True;
+      for Row in Row_Range'First + 1 .. Row_Range'Last loop
+         Next := [others => False];
+         for Col in Col_Range when Curr (Col) loop
+            if Manifold (Row - 1, Col) = Empty then
+               Next (Col) := True;
             else
-               Next.Include
-                 (Position_Record'
-                    (Col => Tachyon.Col + 1, Row => Tachyon.Row + 1));
-               Next.Include
-                 (Position_Record'
-                    (Col => Tachyon.Col - 1, Row => Tachyon.Row + 1));
+               Next (Col + 1) := True;
+               Next (Col - 1) := True;
                Result := @ + 1;
             end if;
          end loop;

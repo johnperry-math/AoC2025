@@ -308,3 +308,8 @@ rather than tracking each one.
 Fun! My first attempt at Part 2 tried to track the timelines,
 but that quickly explodes, which makes sense,
 as my answer  is larger than 10^15 !!!
+
+With HAC:
+* The lack of "modern" Ada containers forced me to think more carefully
+  about my solution to part 1, leading to a smarter solution,
+  which I then back-ported to Ada.
