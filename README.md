@@ -31,6 +31,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🧻 [Day 4](#-day-4-printing-department): Printing Department
   * 🦠 [Day 5](#-day-5-cafeteria): Cafeteria
   * 🦑 [Day 6](#-day-6-trash-compactor): Trash Compactor
+  * ✨ [Day 7](#-day-7-laboratories): Laboratories
 
 ## Problems in order of appearance
 
@@ -280,3 +281,30 @@ With C#:
   intuitive fashion,
   but I really struggled with parsing in C# today, especially in Part 2.
   
+### ✨ Day 7: Laboratories
+
+You exit the trash compactor and enter a research wing.
+The elves are researching teleportation.
+You step into their experimental teleporter,
+which promptly teleports you to a room with another teleporter and no doors.
+(How the elves got a teleporter into a doorless room is left unexplained.)
+
+...and now the teleporter is leaking magic smoke.
+Its failure seems due to a breakdown in a tachyon manifold.
+
+In part 1, you determine how many times the manifold splits a tachyon beam.
+
+In part 2, you count the number of timelines a tachyon ends up in
+while traveling through the manifold.
+
+#### Unusual tools
+
+In Part 2, I mitigate the combinatorial explosion of timelines
+by counting how many timelines pass through a particular column
+rather than tracking each one.
+
+#### Experience
+
+Fun! My first attempt at Part 2 tried to track the timelines,
+but that quickly explodes, which makes sense,
+as my answer  is larger than 10^15 !!!
