@@ -80,11 +80,10 @@ procedure Day07 is
 
    function Part_2 return Number is
       Curr, Next : Row_Array := [others => 0];
-      Row        : Row_Range := Row_Range'First;
       Value      : Number;
    begin
       Curr (Start_Position.Col) := 1;
-      while Row < Row_Range'Last loop
+      for Row in Row_Range loop
          Next := [others => 0];
          for Col in Col_Range when Curr (Col) > 0 loop
             Value := Curr (Col);
@@ -95,7 +94,6 @@ procedure Day07 is
                Next (Col + 1) := @ + Value;
             end if;
          end loop;
-         Row := @ + 1;
          Curr := Next;
       end loop;
       return Curr'Reduce ("+", 0);
