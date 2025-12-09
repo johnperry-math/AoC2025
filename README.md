@@ -32,6 +32,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🦠 [Day 5](#-day-5-cafeteria): Cafeteria
   * 🦑 [Day 6](#-day-6-trash-compactor): Trash Compactor
   * ✨ [Day 7](#-day-7-laboratories): Laboratories
+  * 🔌 [Day 8](#-day-8-playground): Playground
 
 ## Problems in order of appearance
 
@@ -313,3 +314,51 @@ With HAC:
 * The lack of "modern" Ada containers forced me to think more carefully
   about my solution to part 1, leading to a smarter solution,
   which I then back-ported to Ada.
+
+### 🔌 Day 8: Playground
+
+You teleport into an area with a giant playground.
+Elves are hooking up junction boxes so they can electrify their decorations.
+
+(Yeah, I don't wanna be around when the sparks start flying, either...)
+
+In part 1, you help them connect the 1000 boxes that are closest together,
+then report the product of the sizes of the three largest circuits.
+
+In part 2, you help them connect all of them, shortest circuit at a time,
+until you've connected them all into one circuit.
+Then you report the product of the x locations of the last two boxes connected.
+
+#### Unusual tools
+
+My wits, or what's left of them.
+
+#### Experience
+
+For the original solution in Ada:
+* I had the right idea, but kept goofing up:
+  * For Part 1, I thought one case of hooking up junction boxes didn't matter,
+    but of course it did.
+    (It's when you connect two boxes that are already connected.
+    I ignored them at first, but in fact you have to reconsider the circuit.
+    It's not a hard case, but I didn't realize it had to be done, and then,
+    even when I realized the problem, I overlooked yet another issue
+    when fixing it.)
+
+    Worse, this was one of those days where
+    the example didn't cover the case I was struggling with. 😭
+  * For Part 2, the problem is worded vaguely:
+    
+    > What do you get if you multiply together the X coordinates
+    > of the last two junction boxes you need to connect?
+
+    The natural reading of this sentence (to me) indicates
+    the last two _unconnected_ boxes that you connect.
+    What's really meant is
+    the last pair of boxes that you connect _to each other_.
+* After a while I used [this solution from the Reddit page](https://www.reddit.com/r/adventofcode/comments/1ph3tfc/comment/nt1brpq/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
+  to help me identify issues in my problem,
+  -- as well as my understanding of the problem -- though even there,
+  I even read his hint for Part 2 incorrectly.
+
+This just wasn't my day, I guess.
