@@ -33,6 +33,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🦑 [Day 6](#-day-6-trash-compactor): Trash Compactor
   * ✨ [Day 7](#-day-7-laboratories): Laboratories
   * 🔌 [Day 8](#-day-8-playground): Playground
+  * 🟥🟩 [Day 9](#-day-9-movie-theater): Movie Theater
 
 ## Problems in order of appearance
 
@@ -362,3 +363,52 @@ For the original solution in Ada:
   I even read his hint for Part 2 incorrectly.
 
 This just wasn't my day, I guess.
+
+### 🟥🟩 Day 9: Movie Theater
+
+This puzzle is about tiles rather than movies.
+In particular, red and green tiles.
+
+In part 1, you help the elves figure out the largest rectangle
+whose corners are all red tiles (given in the input).
+
+In part 2, you help the elves figure out te largest rectangle
+whose corners are all red tiles (still given in the input)
+and whose sides and interiors are green tiles (not given in the input).
+
+Basically, you're finding the largest rectangle
+that lies within a defined polygon.
+
+#### Unusual tools
+
+For the original solution in Ada:
+* I finally learned how to use raycasting
+  to detect if a point is inside a polygon.
+  Whether I deserve plaudits for doing it when the edges are all horizontal
+  or vertical remains an open question.
+
+#### Experience
+
+This day was also pretty rough.
+
+Part 1 was no problem, knocked it out quickly.
+
+For Part 2, I really had no idea how to tackle it.
+I figured that some near-brute-force algorithm wouldn't work,
+but even after tinkering with drawings of points and edges
+I still couldn't pull anything together.
+
+So I gave up and looked at the reddit page, finally adopting
+the approaching used by [this solution](https://www.reddit.com/r/adventofcode/comments/1phywvn/comment/nt7a6ym/).
+Basically, for each potential rectangle:
+* Perturb the corners inward by 0.5 in each dimension,
+  then raycast from each corner in some direction (I chose right)
+  to count the number of edges it hits.
+  If the ray strikes an odd number of edges, then the corner is inside the figure;
+  otherwise, it's outside.
+
+  (Perturbing by 0.5 allows one to avoid worrying about traveling along an edge.)
+* Also verify that no edge of the rectangle intersects some edge of the figure.
+  This can happen when two edges pass through the rectangle's edge,
+  because the corner is still inside the rectangle;
+  it's just some edge point that is not.
