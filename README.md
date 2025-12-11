@@ -34,6 +34,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * ✨ [Day 7](#-day-7-laboratories): Laboratories
   * 🔌 [Day 8](#-day-8-playground): Playground
   * 🟥🟩 [Day 9](#-day-9-movie-theater): Movie Theater
+  * 🏭 [Day 10](#-day-10-factory): Factory
 
 ## Problems in order of appearance
 
@@ -412,3 +413,52 @@ Basically, for each potential rectangle:
   This can happen when two edges pass through the rectangle's edge,
   because the corner is still inside the rectangle;
   it's just some edge point that is not.
+
+### 🏭 Day 10: Factory
+
+The elves here are having no trouble finding time to decorate,
+because their machines are all offline.
+You need to help them get their machines online.
+
+For part 1, determine the minimum number of buttons to press
+so that the desired indicator lights come on.
+
+For part 2, determine the minimum number of buttons to press
+so that the desired joltage is achieved.
+
+#### Unusual tools
+
+For Ada, I had to whip out my GLPK interface.
+
+#### Experience
+
+I don't know if it's that the last couple of days have drained me
+or if I'm just plain stupid, but I did terribly today.
+In no particular order, my hangups were:
+* I struggled to write the correct parser.
+* I coudln't figure out Part 2 for the life of me.
+* Once I checked the hints at Reddit, I realized that
+  it is indeed a linear programming problem,
+  which embarrasses me, because **I used to teach that**.
+  I mean, I didn't even recognize the matrix structure.
+  **Geez.**
+* Fortunately, I used GNAT to generate
+  a thin Ada binding to GLPK a few years ago,
+  so I should be in good shape, right?
+  Well, **no**; for some reason I could not get the solver
+  to produce a correct answer _for the life of me_.
+  Even now I'm not sure what the precise combination of levers
+  I pulled to make it finally work.
+  The only thing I know for certain is that
+  I re-coded a couple of the examples in my Alpk example
+  that's with the thin binding.
+  * For a while, I was supplying the wrong indices,
+    figuring wrongly that glpk was 0-based -- it's not; it's intelligent --
+    but that wasn't the issue I had at the end.
+* While twiddling levers, I sometimes switched from maximization
+  to minimization, from fixed row bounds to lower row bounds, etc.
+  This eventually led to an issue where, once I finally got the thing working,
+  I had forgotten to switch back from lower row bounds to fixed row bounds,
+  so I lost time debugging that, and might still be pulling out my hair
+  if not for [this Python solution](https://www.reddit.com/r/adventofcode/comments/1pity70/comment/ntdo64y/),
+  which I used to compare notes.
