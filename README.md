@@ -462,3 +462,37 @@ In no particular order, my hangups were:
   so I lost time debugging that, and might still be pulling out my hair
   if not for [this Python solution](https://www.reddit.com/r/adventofcode/comments/1pity70/comment/ntdo64y/),
   which I used to compare notes.
+
+### ☢️ Day 11: Reactor
+
+(Of course it is only incidentally related to a reactor.)
+
+A server needs to communicate with the reactor.
+The elves have done their usual, slapdash job of connecting wires
+to an incomprehensible number of nodes,
+so it comes as no surprise that they aren't communicating.
+Also unsurprisingly, the elves have no idea which path is causing the issue.
+
+(Really, Santa should just fire the lot of them.)
+
+In part 1, you count the number of paths from `you` to `out`.
+
+In part 2, you count the number of paths from `svr` to `out`.
+
+#### Unusual tools
+
+* Depth-first search is back, baby! 😎
+* Memoization is back, baby! 🗒️
+
+#### Experience
+
+Part 1 was fun and easy; I didn't even need to memoize / cache.
+
+Part 2 was tough, but at least I figured out the algorithm pretty quickly.
+After that, I dithered due to unwillingness to sink time
+into a pointless approach.
+I glanced at the Reddit solutions and
+saw that lots of other people were describing exactly the approach I had in mind,
+so I got to work and, after working out a few kinks, earned my second 🌟!
+
+**One more day to go!!!**
