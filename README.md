@@ -35,6 +35,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🔌 [Day 8](#-day-8-playground): Playground
   * 🟥🟩 [Day 9](#-day-9-movie-theater): Movie Theater
   * 🏭 [Day 10](#-day-10-factory): Factory
+  * ☢️ [Day 11](#️-day-11-reactor): Reactor
 
 ## Problems in order of appearance
 
