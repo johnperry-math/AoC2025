@@ -109,6 +109,11 @@ because `Integer` is only 32 bits.
 In C# I wrote my own enumerator, which was pretty time-consuming.
 I say once more that I don't ever want to hear anyone say that _Ada_ is too verbose ever again.
 
+Eventually I re-implemented Day 2 in Ada with different, faster algorithms
+that don't brute-force their way through the ranges.
+Execution time went from 3.5s to 0.005s -- a speedup of 699x!
+(That's 69,900%! I think)
+
 #### Experience
 
 Also straightforward. I also did this one in HAC first.

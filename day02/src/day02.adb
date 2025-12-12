@@ -1,4 +1,5 @@
 with Ada.Containers.Vectors;
+with Ada.Containers.Hashed_Sets;
 with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
@@ -75,6 +76,40 @@ procedure Day02 is
       end if;
    end Num_Digits;
 
+   function Smarter_1 return ID_Range is
+      Result  : ID_Range := 0;
+      Length  : Positive;
+      Counter : ID_Range;
+   begin
+      for Element of ID_Ranges loop
+         Length := Num_Digits (Element.Start);
+         declare
+            Start : constant String := Element.Start'Image;
+         begin
+            if Length mod 2 = 0 then
+               Counter := ID_Range'Value (Start (2 .. Length / 2 + 1));
+            else
+               Counter := 10**(Length / 2);
+            end if;
+         end;
+         loop
+            declare
+               Current       : constant String := Counter'Image;
+               Doubled       : constant String :=
+                 Current (2 .. Current'Length) & Current (2 .. Current'Length);
+               Doubled_Value : constant ID_Range := ID_Range'Value (Doubled);
+            begin
+               exit when Doubled_Value > Element.Finish;
+               Counter := Counter + 1;
+               if Doubled_Value >= Element.Start then
+                  Result := Result + Doubled_Value;
+               end if;
+            end;
+         end loop;
+      end loop;
+      return Result;
+   end Smarter_1;
+
    function Part_1 return ID_Range is
       Result : ID_Range := 0;
       Length : Positive;
@@ -99,6 +134,92 @@ procedure Day02 is
       return Result;
    end Part_1;
 
+   function Repeat (Substring : String; Repetitions : Positive) return String
+   is
+      Result   : String (1 .. Substring'Length * Repetitions) :=
+        (others => ' ');
+      Position : Positive := 1;
+   begin
+      while Position <= Result'Last loop
+         Result (Position .. Position + Substring'Length - 1) := Substring;
+         Position := Position + Substring'Length;
+      end loop;
+      return Result;
+   end Repeat;
+
+   function Smarter_2 return ID_Range is
+      Result        : ID_Range := 0;
+      Length        : Positive;
+      function Hash (ID : ID_Range) return Ada.Containers.Hash_Type
+      is (Ada.Containers.Hash_Type (ID mod 32003));
+      package ID_Sets is new
+        Ada.Containers.Hashed_Sets
+          (Element_Type        => ID_Range,
+           Hash                => Hash,
+           Equivalent_Elements => "=");
+      subtype ID_Set is ID_Sets.Set;
+      Caught_Values : ID_Set;
+   begin
+      for Element of ID_Ranges loop
+         Length := Num_Digits (Element.Finish);
+         declare
+            ID_Image       : constant String := Element.Start'Image;
+            As_String      : constant String := ID_Image (2 .. ID_Image'Last);
+            Stop_Image     : constant String := Element.Finish'Image;
+            Stop_As_String : constant String :=
+              Stop_Image (2 .. Stop_Image'Last);
+         begin
+            for Sublength in 1 .. Length / 2 loop
+               declare
+                  Power_Of_Ten : constant Positive := 10**(Sublength - 1);
+                  Power_Image  : constant String := Power_Of_Ten'Image;
+                  Power_String : constant String :=
+                    Power_Image (2 .. Power_Image'Length);
+                  Substring    : constant String :=
+                    (if As_String'Length = Stop_As_String'Length
+                     then As_String (2 .. Sublength + 1)
+                     else Power_String);
+                  Counter      : ID_Range := ID_Range'Value (Substring);
+                  Stop_Counter : ID_Range :=
+                    (if As_String'Length = Stop_As_String'Length
+                     then ID_Range'Value (Stop_As_String (2 .. Sublength + 1))
+                     else
+                       ID_Range'Value (Stop_As_String (2 .. Sublength + 2)));
+               begin
+                  loop
+                     for Repetitions in
+                       Positive'Max (2, Num_Digits (Element.Start) / Sublength)
+                       .. Num_Digits (Element.Finish) / Sublength
+                     loop
+                        declare
+                           Counter_Image  : constant String := Counter'Image;
+                           Counter_String : constant String :=
+                             Counter_Image (2 .. Counter_Image'Length);
+                           Repeated       : constant String :=
+                             Repeat (Counter_String, Repetitions);
+                           Repeated_Value : constant ID_Range :=
+                             ID_Range'Value (Repeated);
+                        begin
+                           exit when Repeated_Value > Element.Finish;
+                           if Repeated_Value >= Element.Start
+                             and then not Caught_Values.Contains
+                                            (Repeated_Value)
+                           then
+                              Result := Result + Repeated_Value;
+                              Caught_Values.Include (Repeated_Value);
+                           end if;
+                        end;
+                     end loop;
+                     Counter := Counter + 1;
+                     exit when Counter > Stop_Counter;
+                  end loop;
+               end;
+            end loop;
+         end;
+      end loop;
+      return Result;
+   end Smarter_2;
+
    function Repeats_With_Length
      (Value : String; Sublength : Positive) return Boolean
    is
@@ -108,6 +229,12 @@ procedure Day02 is
       if Length mod Sublength /= 0 then
          return False;
       end if;
+      --  ????!!!???
+      --  ABC DEF GHI
+      --  Length 9, Sublength 3
+      --  Multiple 1
+      --     Start = 1 * 3 + 2 = 5
+      --     Finish = 2 * 3 + 1 = 7
       for Multiple in 1 .. Length / Sublength - 1 loop
          Start := Multiple * Sublength + 2;
          Finish := (Multiple + 1) * Sublength + 1;
@@ -134,7 +261,6 @@ procedure Day02 is
                begin
                   if Repeats_With_Length (As_String, Sublength) then
                      Result := Result + ID;
-                     IO.Put_Line ("found" & Id'Image & Sublength'Image);
                      exit;
                   end if;
                end;
@@ -147,7 +273,9 @@ procedure Day02 is
 begin
    Read_Input;
    IO.Put ("The sum of invalid id's is ");
-   IO.Put_Line (Part_1'Image);
+   IO.Put_Line (Smarter_1'Image);
+   --  IO.Put_Line (Part_1'Image);
    IO.Put ("Upon further investigation, it's ");
-   IO.Put_Line (Part_2'Image);
+   IO.Put_Line (Smarter_2'Image);
+--  IO.Put_Line (Part_2'Image);
 end Day02;
