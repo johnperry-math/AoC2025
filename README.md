@@ -36,6 +36,7 @@ While I'm at it, I'll document differences I find between HAC and Ada 2022.
   * 🟥🟩 [Day 9](#-day-9-movie-theater): Movie Theater
   * 🏭 [Day 10](#-day-10-factory): Factory
   * ☢️ [Day 11](#️-day-11-reactor): Reactor
+  * 🎄 [Day 12](#-day-12-christmas-tree-farm): Christmas Tree Farm
 
 ## Problems in order of appearance
 
@@ -497,3 +498,41 @@ saw that lots of other people were describing exactly the approach I had in mind
 so I got to work and, after working out a few kinks, earned my second 🌟!
 
 **One more day to go!!!**
+
+### 🎄 Day 12: Christmas Tree Farm
+
+Elves want to place gifts under trees.
+The gifts have strange shapes.
+There is only so much room under each tree.
+
+In part 1, you figure out which schemata of gifts under trees are feasible.
+
+Part 2 is the usual end-of-event freebie.
+
+#### Unusual tools
+
+None worth mentioning.
+
+#### Experience
+
+I pondered this a few minutes, pondered it some more minutes,
+began to imagine an algorithm in my head, then looked at the numbers in the input,
+and asked myself if the puzzle master had lost his mind.
+Talk about combinatorial explosion!
+
+Then I looked at it a bit longer, at which point I noticed that, wait a minute,
+some of those gift numbers seemed too big.
+Could it be as stupid as a counting algorithm?
+
+Well, maybe not if you rearrange them...
+
+So I looked at a few hints, first Wutka's hint on
+[the Ada language forum](https://forum.ada-lang.io/t/2025-day-12-christmas-tree-farm/4039?u=cantanima),
+which really only made me doubt myself all the more --
+probably with reason; my initial counting algorithm wasn't as simple as that --
+and then the Reddit solutions, and I was relieved that I wasn't that far
+from a solution that people knew worked.
+
+This was all during about 20-30 minutes of lunch, by the way.
+I implemented it once I was done with work, without a hitch --
+though it is a _little_ different from what I remember people saying.
