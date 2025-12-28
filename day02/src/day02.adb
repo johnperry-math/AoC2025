@@ -229,15 +229,9 @@ procedure Day02 is
       if Length mod Sublength /= 0 then
          return False;
       end if;
-      --  ????!!!???
-      --  ABC DEF GHI
-      --  Length 9, Sublength 3
-      --  Multiple 1
-      --     Start = 1 * 3 + 2 = 5
-      --     Finish = 2 * 3 + 1 = 7
       for Multiple in 1 .. Length / Sublength - 1 loop
-         Start := Multiple * Sublength + 2;
-         Finish := (Multiple + 1) * Sublength + 1;
+         Start := Multiple * Sublength + Value'First;
+         Finish := Start + Sublength - 1;
          if Value (Value'First .. Value'First + Sublength - 1)
            /= Value (Start .. Finish)
          then
@@ -277,5 +271,5 @@ begin
    --  IO.Put_Line (Part_1'Image);
    IO.Put ("Upon further investigation, it's ");
    IO.Put_Line (Smarter_2'Image);
---  IO.Put_Line (Part_2'Image);
+   IO.Put_Line (Part_2'Image);
 end Day02;
