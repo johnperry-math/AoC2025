@@ -134,7 +134,11 @@ procedure Day02 is
       return Result;
    end Part_1;
 
-   function Repeat (Substring : String; Repetitions : Positive) return String
+   function Repeat
+     (Substring : String; Repetitions : Positive)
+      return String
+             --  returns a string corresponding to
+             --  the indicated number of Repetitions of Substring
    is
       Result   : String (1 .. Substring'Length * Repetitions) :=
         (others => ' ');
@@ -148,70 +152,134 @@ procedure Day02 is
    end Repeat;
 
    function Smarter_2 return ID_Range is
-      Result        : ID_Range := 0;
-      Length        : Positive;
+
+      Result : ID_Range := 0;
+      Length : Positive;
+
+      --  the following several lines set up a hash set
+      --  so i can avoid double-counting values i've already counted
+      --  first i need a hash
       function Hash (ID : ID_Range) return Ada.Containers.Hash_Type
       is (Ada.Containers.Hash_Type (ID mod 32003));
+
+      --  now i need to instantiate the generic package
       package ID_Sets is new
         Ada.Containers.Hashed_Sets
           (Element_Type        => ID_Range,
            Hash                => Hash,
            Equivalent_Elements => "=");
+
+      --  give the type a shorthand
       subtype ID_Set is ID_Sets.Set;
+
+      --  now i can define the set
       Caught_Values : ID_Set;
+
    begin
+
       for Element of ID_Ranges loop
          Length := Num_Digits (Element.Finish);
+
          declare
+            --  create strings corresponding to the range endpoints
             ID_Image       : constant String := Element.Start'Image;
             As_String      : constant String := ID_Image (2 .. ID_Image'Last);
             Stop_Image     : constant String := Element.Finish'Image;
             Stop_As_String : constant String :=
               Stop_Image (2 .. Stop_Image'Last);
+
          begin
+            --  try each possible sublength
+            --  we won't bother with sublength divisibility here:
+            --  it's fast enough as is and a little trickier
+            --  to consider divisibility, since the endpoints
+            --  have different lengths
             for Sublength in 1 .. Length / 2 loop
                declare
                   Power_Of_Ten : constant Positive := 10**(Sublength - 1);
                   Power_Image  : constant String := Power_Of_Ten'Image;
                   Power_String : constant String :=
                     Power_Image (2 .. Power_Image'Length);
-                  Substring    : constant String :=
+                  --  Power_... variables are for the occasions where
+                  --  the endpoints have different lengths.
+                  --  for example, if Sublength is 2, corresponding to 62,
+                  --  then we start with 10.
+                  --  this is smaller than 62, but that's how we ensure
+                  --  that we check cases like 1010
+
+                  Substring : constant String :=
                     (if As_String'Length = Stop_As_String'Length
                      then As_String (2 .. Sublength + 1)
                      else Power_String);
-                  Counter      : ID_Range := ID_Range'Value (Substring);
+                  --  substring to start from;
+                  --  notice different values when they have different lengths.
+                  --  in a range like 1234-5678 and a sublength of
+                  --  this will start us at 12.
+                  --  in a case like 67890-123450 and a sublength of 2
+                  --  this will start us at 10; that helps catch 13 13 13 etc.
+
+                  Start_Counter : ID_Range := ID_Range'Value (Substring);
+                  --  we can't increment substring so we convert to a number
+
                   Stop_Counter : ID_Range :=
                     (if As_String'Length = Stop_As_String'Length
                      then ID_Range'Value (Stop_As_String (2 .. Sublength + 1))
                      else
                        ID_Range'Value (Stop_As_String (2 .. Sublength + 2)));
+                  --  don't count beyond this point;
+                  --  notice different values when they have different lengths
+
+                  Smallest_Repetition : Positive :=
+                    Positive'Max (2, Num_Digits (Element.Start) / Sublength);
+                  --  when the endpoints have different sizes,
+                  --  the number of repetitions could vary.
+                  --  for example, with 67890-123450 a repetition of 2
+                  --  makes sense thanks to the latter but not the former.
+                  --  here we consider repetitions possible
+                  --  for the left endpoint here, and "max" with 2 because
+                  --  the leftmost endpoint can be a single digit,
+                  --  and we need at least one repetition; i.e.,
+                  --  Smallest_Repetition can be no smaller than 2
+                  Largest_Repetition  : Positive :=
+                    Num_Digits (Element.Finish) / Sublength;
+                  --  when the endpoints have different sizes,
+                  --  the number of repetitions could vary,
+                  --  as explained above.
+                  --  here we consider repetitions possible
+                  --  for the right endpoint
                begin
-                  loop
+
+                  for Counter in Start_Counter .. Stop_Counter loop
+
                      for Repetitions in
-                       Positive'Max (2, Num_Digits (Element.Start) / Sublength)
-                       .. Num_Digits (Element.Finish) / Sublength
+                       Smallest_Repetition .. Largest_Repetition
                      loop
+
                         declare
+                           --  make the string corresponding to Counter
                            Counter_Image  : constant String := Counter'Image;
                            Counter_String : constant String :=
                              Counter_Image (2 .. Counter_Image'Length);
-                           Repeated       : constant String :=
+
+                           --  make the string and value corresponding to
+                           --  the ID we're checking
+                           ID_String : constant String :=
                              Repeat (Counter_String, Repetitions);
-                           Repeated_Value : constant ID_Range :=
-                             ID_Range'Value (Repeated);
+                           ID_Value  : constant ID_Range :=
+                             ID_Range'Value (ID_String);
                         begin
-                           exit when Repeated_Value > Element.Finish;
-                           if Repeated_Value >= Element.Start
-                             and then not Caught_Values.Contains
-                                            (Repeated_Value)
+
+                           exit when ID_Value > Element.Finish;
+
+                           if ID_Value >= Element.Start
+                             and then not Caught_Values.Contains (ID_Value)
                            then
-                              Result := Result + Repeated_Value;
-                              Caught_Values.Include (Repeated_Value);
+                              Result := Result + ID_Value;
+                              Caught_Values.Include (ID_Value);
                            end if;
+
                         end;
                      end loop;
-                     Counter := Counter + 1;
-                     exit when Counter > Stop_Counter;
                   end loop;
                end;
             end loop;
@@ -271,5 +339,5 @@ begin
    --  IO.Put_Line (Part_1'Image);
    IO.Put ("Upon further investigation, it's ");
    IO.Put_Line (Smarter_2'Image);
-   IO.Put_Line (Part_2'Image);
+--  IO.Put_Line (Part_2'Image);
 end Day02;
